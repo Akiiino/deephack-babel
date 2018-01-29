@@ -1,3 +1,4 @@
+#!/bin/sh
 spm_train --input=corpus1.txt --model_prefix=lang1 --vocab_size=50000 --model_type=word --num_threads 4
 spm_train --input=corpus2.txt --model_prefix=lang2 --vocab_size=50000 --model_type=word --num_threads 4
 spm_encode --model=lang1.model --output_format=piece --output monolng1.txt corpus1.txt
