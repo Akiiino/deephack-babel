@@ -6,15 +6,16 @@ CORPUS=$(INPUT_FOLDER)/corpus
 INPUT=$(INPUT_FOLDER)/input.txt
 
 MODEL_PREFIX=$(INTERM_FOLDER)/lang-
-ENCODED_MONO=$(INTERM_FOLDER)/mono-
-ENCODED_PARAL=$(INTERM_FOLDER)/paral-
+TOKENIZED_MONO=$(INTERM_FOLDER)/mono-
+TOKENIZED_PARAL=$(INTERM_FOLDER)/paral-
 SPLIT_PARALLEL=$(INTERM_FOLDER)/parallel_split-
 FULL=$(INTERM_FOLDER)/full-
 EMBEDDED_MONO=$(INTERM_FOLDER)/emb-
 
-ENCODED_INPUT=$(INTERM_FOLDER)/input.txt
+TOKENIZED_INPUT=$(INTERM_FOLDER)/input.txt
 
-CORENLP=corenlp/stanford-corenlp-3.8.0.jar
+# TOKENIZER=CLASSPATH=corenlp/stanford-corenlp-3.8.0.jar java edu.stanford.nlp.process.PTBTokenizer -preserveLines
+TOKENIZER=python3 polyglot_tokenize.py
 FASTTEXT=fastText/fasttext skipgram -dim 300 -epoch 5 -thread 4
 MUSE=python3 MUSE/unsupervised.py \
 	--cuda True \
@@ -42,18 +43,18 @@ encode:
 
 	for doc in src tgt; do \
 		cat $(CORPUS)-$$doc.txt $(SPLIT_PARALLEL)$$doc.txt > $(FULL)$$doc.txt ; \
-		CLASSPATH=$(CORENLP) java edu.stanford.nlp.process.PTBTokenizer -preserveLines  $(FULL)$$doc.txt > $(ENCODED_MONO)$$doc.txt ; \
-		CLASSPATH=$(CORENLP) java edu.stanford.nlp.process.PTBTokenizer -preserveLines  $(SPLIT_PARALLEL)$$doc.txt > $(ENCODED_PARAL)$$doc.txt ; \
+		$(TOKENIZER) $(FULL)$$doc.txt > $(TOKENIZED_MONO)$$doc.txt ; \
+		$(TOKENIZER) $(SPLIT_PARALLEL)$$doc.txt > $(TOKENIZED_PARAL)$$doc.txt ; \
 	done
 
-	CLASSPATH=$(CORENLP) java edu.stanford.nlp.process.PTBTokenizer -preserveLines  $(INPUT) > $(ENCODED_INPUT)
+	$(TOKENIZER) $(INPUT) > $(TOKENIZED_INPUT)
 
 	touch $@
 
 
 embed: encode
 	for doc in src tgt; do \
-		$(FASTTEXT) -input $(ENCODED_MONO)$$doc.txt -output $(EMBEDDED_MONO)$$doc ; \
+		$(FASTTEXT) -input $(TOKENIZED_MONO)$$doc.txt -output $(EMBEDDED_MONO)$$doc ; \
 	done
 
 	touch $@
