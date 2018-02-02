@@ -1,4 +1,4 @@
-INPUT_FOLDER=/data
+INPUT_FOLDER=data
 INTERM_FOLDER=temp
 
 VOCAB_SIZE=20000
@@ -20,17 +20,8 @@ EMBEDDED_MONO=$(INTERM_FOLDER)/emb-
 
 TOKENIZED_INPUT=$(INTERM_FOLDER)/input.txt
 
-for doc in $(CORPUS)1.txt $(CORPUS)2.txt; do
-	if $(wc -l $$doc | cut -d " " -f1) -lt 1000
-	then
-		VOCAB_SIZE=10
-	fi
-done
-
-# TOKENIZER=CLASSPATH=corenlp/stanford-corenlp-3.8.0.jar java edu.stanford.nlp.process.PTBTokenizer -preserveLines
 TRAIN_TOKENIZER=spm_train --vocab_size=$(VOCAB_SIZE) --model_type=unigram --num_threads 4
 TOKENIZER=spm_encode --output_format=piece
-# TOKENIZER=python3 polyglot_tokenize.py
 FASTTEXT=fastText/fasttext skipgram -dim 300 -epoch 5 -thread 4
 MUSE=python3 MUSE/unsupervised.py \
 	--cuda True \
@@ -46,9 +37,15 @@ MUSE=python3 MUSE/unsupervised.py \
 	--n_epochs 15 \
 	--verbose 1 \
 	--exp_path $(INTERM_FOLDER)
-# MUSE=python3 aMUSE/unsupervised_wgan.py --cuda True --src_lang src --tgt_lang tgt --emb_dim 300 --dis_most_frequent 10000 --dis_smooth 0.3 --batch_size 2048  --dis_dropout 0.2 --dis_clip_weights 1 --refinement True --n_iters 25 --exp_path $(INTERM_FOLDER)
 
 encode:
+	for doc in $(CORPUS)1.txt $(CORPUS)2.txt; do \
+		if [$(wc -l $$doc | cut -d " " -f1) -lt 1000] ; then \
+			echo "CUTTING VOCAB_SIZE" ; \
+			VOCAB_SIZE=10 ; \
+		fi \
+	done
+
 	mkdir -p $(INTERM_FOLDER)
 
 	cp $(CORPUS)1.txt $(CORPUS)-src.txt
@@ -90,9 +87,7 @@ train_transformer: encode
 
 	python3 transformer/translate.py -model trained.chkpt -vocab data.svd -src $(INTERM_FOLDER)/input.txt
 
-	spm_decode --model=$(MODEL_PREFIX)tgt.model --input_format=piece < pred.txt > /output/output.txt
-
-	touch $@
+	spm_decode --model=$(MODEL_PREFIX)tgt.model --input_format=piece < pred.txt > /output/output.
 
 clean:
 	rm -rf $(INTERM_FOLDER)
