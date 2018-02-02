@@ -82,7 +82,7 @@ parallel_embed: embed
 train_transformer: encode
 	python3 transformer/preprocess.py -train_src $(INTERM_FOLDER)/paral-src.txt -train_tgt $(INTERM_FOLDER)/paral-tgt.txt -valid_src $(INTERM_FOLDER)/paral-src.txt -valid_tgt $(INTERM_FOLDER)/paral-tgt.txt -save_data data.svd
 
-	python3 transformer/train.py -data data.svd -save_model trained -save_mode best -proj_share_weight
+	python3 transformer/train.py -data data.svd -save_model trained -save_mode best -proj_share_weight -src_embeds $(INTERM_FOLDER)/vectors-src.txt -tgt_embeds $(INTERM_FOLDER)/vectors_tgt.txt
 
 	python3 transformer/translate.py -model trained.chkpt -vocab data.svd -src $(INTERM_FOLDER)/input.txt
 
