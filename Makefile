@@ -1,4 +1,4 @@
-INPUT_FOLDER=/data
+INPUT_FOLDER=data
 INTERM_FOLDER=temp
 
 VOCAB_SIZE=20000
@@ -62,9 +62,6 @@ encode:
 	done
 
 	$(TOKENIZER) --model=$(MODEL_PREFIX)src.model $(INPUT) > $(TOKENIZED_INPUT)
-	if $(HAS_OUTPUT); do \
-		$(TOKENIZER) --model=$(MODEL_PREFIX)tgt.model $(OUTPUT) > $(TOKENIZED_OUTPUT) ; \
-	done
 
 	touch $@
 
@@ -77,7 +74,8 @@ embed: encode
 	touch $@
 
 parallel_embed: embed
-	$(MUSE) --src_emb $(EMBEDDED_MONO)src.vec --tgt_emb $(EMBEDDED_MONO)tgt.vec
+	$(MUSE) --src_emb $(EMBEDDED_MONO)src.vec --tgt_emb MUSE/emb-stand.txt
+	$(MUSE) --src_emb $(EMBEDDED_MONO)tgt.vec --tgt_emb MUSE/emb-stand.txt
 
 	touch $@
 
