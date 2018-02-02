@@ -42,7 +42,7 @@ res1= $(shell wc -l $(CORPUS)1.txt | cut -d " " -f1)
 res2= $(shell wc -l $(CORPUS)2.txt | cut -d " " -f1)
 
 encode:
-	if [ $(res1) -lt 10 ] || [ $(res2) -lt 10]; then\
+	if [ $(res1) -lt 10 ] || [ $(res2) -lt 10 ]; then\
 		echo "CUTTING" ;\
 		VOCAB_SIZE:=10 ;\
 	fi;
