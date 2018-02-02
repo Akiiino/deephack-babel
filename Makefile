@@ -44,7 +44,7 @@ res2= $(shell wc -l $(CORPUS)2.txt | cut -d " " -f1)
 encode:
 	if [ $(res1) -lt 10 ] || [ $(res2) -lt 10 ]; then\
 		echo "CUTTING" ;\
-		VOCAB_SIZE:=10 ;\
+		$(eval VOCAB_SIZE:=100) \
 	fi;
 
 	mkdir -p $(INTERM_FOLDER)
