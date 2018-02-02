@@ -42,4 +42,6 @@ RUN make
 WORKDIR ..
 RUN git clone https://github.com/facebookresearch/MUSE.git
 RUN conda install -y -c pytorch faiss-gpu
+RUN pip install tqdm
 COPY Makefile .
+RUN git clone https://github.com/jadore801120/attention-is-all-you-need-pytorch transformer
