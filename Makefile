@@ -1,4 +1,4 @@
-INPUT_FOLDER=data
+INPUT_FOLDER=/data
 INTERM_FOLDER=temp
 
 VOCAB_SIZE=20000
@@ -38,13 +38,14 @@ MUSE=python3 MUSE/unsupervised.py \
 	--verbose 1 \
 	--exp_path $(INTERM_FOLDER)
 
+res1= $(shell wc -l $(CORPUS)1.txt | cut -d " " -f1)
+res2= $(shell wc -l $(CORPUS)2.txt | cut -d " " -f1)
+
 encode:
-	for doc in $(CORPUS)1.txt $(CORPUS)2.txt; do \
-		if [$(wc -l $$doc | cut -d " " -f1) -lt 1000] ; then \
-			echo "CUTTING VOCAB_SIZE" ; \
-			VOCAB_SIZE=10 ; \
-		fi \
-	done
+	if [ $(res1) -lt 10 ] || [ $(res2) -lt 10]; then\
+		echo "CUTTING" ;\
+		VOCAB_SIZE:=10 ;\
+	fi;
 
 	mkdir -p $(INTERM_FOLDER)
 
