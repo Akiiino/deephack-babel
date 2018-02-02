@@ -20,6 +20,13 @@ EMBEDDED_MONO=$(INTERM_FOLDER)/emb-
 
 TOKENIZED_INPUT=$(INTERM_FOLDER)/input.txt
 
+for doc in $(CORPUS)1.txt $(CORPUS)2.txt; do
+	if $(wc -l $$doc | cut -d " " -f1) -lt 1000
+	then
+		VOCAB_SIZE=10
+	fi
+done
+
 # TOKENIZER=CLASSPATH=corenlp/stanford-corenlp-3.8.0.jar java edu.stanford.nlp.process.PTBTokenizer -preserveLines
 TRAIN_TOKENIZER=spm_train --vocab_size=$(VOCAB_SIZE) --model_type=unigram --num_threads 4
 TOKENIZER=spm_encode --output_format=piece
